@@ -1,0 +1,164 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Step Functions Connector Cloudformation Template
+Transform: 'AWS::Serverless-2016-10-31'
+Parameters:
+  ProjectName:
+    Description: "Project Name"
+    Type: String
+    Default: step-functions-connector
+  EnvType:
+    Description: "Environment type (eg, dev, staging, prod)"
+    Type: String
+    Default: dev
+  TemplatesS3Bucket:
+    Description: "S3 Bucket where files will be copied from"
+    Type: String
+Resources:
+  LegacyStepFunctionsConnectorLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Description: Lambda that transforms Step Function state outputs into inputs based on a Jinja2 template
+      FunctionName: !Sub "${EnvType}-${ProjectName}-legacy-lambda"
+      Handler: aws-step-functions-connector.handler
+      Runtime: python3.6 
+      CodeUri: ../lambdas/
+      MemorySize: 128
+      Timeout: 120
+      Policies:
+        - AWSLambdaExecute
+        - S3ReadPolicy:
+            BucketName: !Ref TemplatesS3Bucket
+      Environment:
+        Variables:
+            TemplatesS3Bucket: !Ref TemplatesS3Bucket
+            TemplateName: "legacy-system.jinja2"
+  NewStepFunctionsConnectorLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Description: Lambda that transforms Step Function state outputs into inputs based on a Jinja2 template
+      FunctionName: !Sub "${EnvType}-${ProjectName}-new-lambda"
+      Handler: aws-step-functions-connector.handler
+      Runtime: python3.6 
+      CodeUri: ../lambdas/
+      MemorySize: 128
+      Timeout: 120
+      Policies:
+        - AWSLambdaExecute
+        - S3ReadPolicy:
+            BucketName: !Ref TemplatesS3Bucket
+      Environment:
+        Variables:
+            TemplatesS3Bucket: !Ref TemplatesS3Bucket
+            TemplateName: "new-system.jinja2"
+  GenerateEmployeeReportLambda:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Description: Sample Lambda to Generate Employee Report
+      FunctionName: !Sub "${EnvType}-${ProjectName}-employee-report-lambda"
+      Handler: generate-employee-report.handler
+      Runtime: python3.6 
+      CodeUri: ../lambdas/
+      MemorySize: 128
+      Timeout: 120
+      Policies:
+        - AWSLambdaExecute
+  StepFunctionsStateMachineRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - !Sub "states.${AWS::Region}.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        -
+          PolicyName: "lambda"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource: "*"
+  StepFunctionsStateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: !Sub "${EnvType}-${ProjectName}-state-machine"
+      RoleArn: !GetAtt StepFunctionsStateMachineRole.Arn
+      DefinitionString:
+        !Sub |
+          {
+              "Comment": "A Sample Step Functions State Machine",
+              "StartAt": "Identify Employee System",
+              "States":
+              {
+                  "Identify Employee System":
+                  {
+                      "Type": "Choice",
+                      "Choices": [
+                          {
+                            "Variable": "$.system",
+                            "StringEquals": "legacy",
+                            "Next": "Fetch From Legacy System"
+                          }
+                      ],
+                      "Default": "Fetch From New System"
+                  },
+                  "Fetch From Legacy System":
+                  {
+                      "Type": "Pass",
+                      "Result": {
+                          "name": "John",
+                          "last_name": "Smith",
+                          "age": 40,
+                          "employed": true
+                      },
+                      "ResultPath": "$.record",
+                      "Next": "Legacy System Transform Output"
+                  },
+                  "Fetch From New System":
+                  {
+                      "Type": "Pass",
+                      "Result": {
+                          "last_first_name": "Smith, John",
+                          "age": 40,
+                          "employment_status": "employed"
+                      },
+                      "ResultPath": "$.record",
+                      "Next": "New System Transform Output"
+                  },
+                  "Legacy System Transform Output":
+                  {
+                      "Type": "Task",
+                      "Resource": "${LegacyStepFunctionsConnectorLambda.Arn}",
+                      "InputPath": "$.record",
+                      "ResultPath": "$.employee",
+                      "OutputPath": "$.employee",
+                      "Next": "Generate Employee Report"
+                  },
+                  "New System Transform Output":
+                  {
+                      "Type": "Task",
+                      "Resource": "${LegacyStepFunctionsConnectorLambda.Arn}",
+                      "InputPath": "$.record",
+                      "ResultPath": "$.employee",
+                      "OutputPath": "$.employee",
+                      "Next": "Generate Employee Report"
+                  },      
+                  "Generate Employee Report":
+                  {
+                      "Type": "Task",
+                      "Resource": "${GenerateEmployeeReportLambda.Arn}",
+                      "InputPath": "$.employee",
+                      "End": true
+                  }
+              }
+          }

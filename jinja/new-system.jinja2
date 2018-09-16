@@ -1,0 +1,8 @@
+{% set name = last_first_name.split(' ') %}
+{
+   "id": "{{ name[1] }} {{ name[0] }}",
+   "details": {
+       "age": {{ age }},
+       "employment_status": {{ employment_status }}
+   }
+}
