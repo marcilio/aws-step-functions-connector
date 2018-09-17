@@ -1,12 +1,16 @@
 # Intro
 
-```Use Jinja2 templates to perform complex stage-to-stage transforms on AWS Step Function State Machines``` and abstract data transformation from your main state machine logic.
+```Use [Jinja2](http://jinja.pocoo.org/docs/2.10/) templates to perform complex stage-to-stage transforms on``` [AWS Step Functions State Machines](https://aws.amazon.com/step-functions/) and abstract data transformation from your main state machine logic.
+
+Main Use Cases/Advantages:
+* When a new state machine is built to on top of a group of existing Lambda functions with pre-defined inputs and outputs
+* To encourage the development of low-coupled reusable Lambda functions build as part of a new state machine
 
 Anyone who's built a reasonably-sized AWS Step Function state machine knows that a reasonable amount of time is spent managing stage inputs and outputs, ie, transforming the JSON output structure of one stage to fit the JSON input structure of another stage. While AWS provides a way to query the JSON input and do some basic tranformation via JsonPath there are scenarios where one needs a more expresive language to perform complext transformations. 
 
-Jinja2 to the rescue!
+[Jinja2](http://jinja.pocoo.org/docs/2.10/) to the rescue!
 
-This project uses Jinja2 and a Lambda function (connector) to perform transformations on state machine stage outputs to match the expected input of transitioned stages. Just add the connector Lambda function to the state machine and specify the Jinja2 template to be used. The input values received by the Lambda are automatically exposed to the Jinja2 template. Use multiple connectors if needed!
+This project uses Jinja2 and a Lambda function (connector) to abstract out input/output transformations from the state machine main logic so that stage outputs match the expected input of following stages.  Just add the connector Lambda function to the state machine and specify the Jinja2 template to be used. The input values received by the Lambda are automatically exposed to the Jinja2 template. Use multiple connectors if needed!
 
 # Example
 
