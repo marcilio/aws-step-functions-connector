@@ -1,6 +1,6 @@
 # Intro
 
-```Use [Jinja2](http://jinja.pocoo.org/docs/2.10/) templates to perform complex stage-to-stage transforms on``` [AWS Step Functions State Machines](https://aws.amazon.com/step-functions/) and abstract data transformation from your main state machine logic.
+```Use``` [Jinja2](http://jinja.pocoo.org/docs/2.10/) ```templates to perform complex stage-to-stage transforms on``` [AWS Step Functions State Machines](https://aws.amazon.com/step-functions/) and abstract data transformation from your main state machine logic.
 
 Main Use Cases/Advantages:
 * When a new state machine is built to on top of a group of existing Lambda functions with pre-defined inputs and outputs
