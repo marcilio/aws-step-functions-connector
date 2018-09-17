@@ -15,9 +15,9 @@ import json
 s3 = boto3.client('s3')
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-# TODO: read below from environment variables
-s3_bucket = 'aws-step-functions-connector'
-s3_template_name = 'sample.jinja2'
+
+s3_bucket = os.environ['TemplatesS3Bucket']
+s3_template_name = os.environ['TemplateName']
 
 def get_s3_object_content(s3_bucket, s3_file):
     response = s3.get_object(Bucket=s3_bucket, Key=s3_file)

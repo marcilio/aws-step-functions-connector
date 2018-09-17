@@ -15,7 +15,7 @@ Parameters:
     Description: "S3 Bucket where files will be copied from"
     Type: String
 Resources:
-  LegacyStepFunctionsConnectorLambda:
+  LegacySystemStepFunctionsConnectorLambda:
     Type: 'AWS::Serverless::Function'
     Properties:
       Description: Lambda that transforms Step Function state outputs into inputs based on a Jinja2 template
@@ -33,7 +33,7 @@ Resources:
         Variables:
             TemplatesS3Bucket: !Ref TemplatesS3Bucket
             TemplateName: "legacy-system.jinja2"
-  NewStepFunctionsConnectorLambda:
+  NewSystemStepFunctionsConnectorLambda:
     Type: 'AWS::Serverless::Function'
     Properties:
       Description: Lambda that transforms Step Function state outputs into inputs based on a Jinja2 template
@@ -128,7 +128,7 @@ Resources:
                   {
                       "Type": "Pass",
                       "Result": {
-                          "last_first_name": "Smith, John",
+                          "last_first_name": "Smith,John",
                           "age": 40,
                           "employment_status": "employed"
                       },
@@ -138,7 +138,7 @@ Resources:
                   "Legacy System Transform Output":
                   {
                       "Type": "Task",
-                      "Resource": "${LegacyStepFunctionsConnectorLambda.Arn}",
+                      "Resource": "${LegacySystemStepFunctionsConnectorLambda.Arn}",
                       "InputPath": "$.record",
                       "ResultPath": "$.employee",
                       "OutputPath": "$.employee",
@@ -147,7 +147,7 @@ Resources:
                   "New System Transform Output":
                   {
                       "Type": "Task",
-                      "Resource": "${LegacyStepFunctionsConnectorLambda.Arn}",
+                      "Resource": "${NewSystemStepFunctionsConnectorLambda.Arn}",
                       "InputPath": "$.record",
                       "ResultPath": "$.employee",
                       "OutputPath": "$.employee",
@@ -157,7 +157,6 @@ Resources:
                   {
                       "Type": "Task",
                       "Resource": "${GenerateEmployeeReportLambda.Arn}",
-                      "InputPath": "$.employee",
                       "End": true
                   }
               }
