@@ -1,10 +1,10 @@
 # Intro
 
-```Use``` [Jinja2](http://jinja.pocoo.org/docs/2.10/) ```templates to perform complex stage-to-stage transforms on``` [AWS Step Functions State Machines](https://aws.amazon.com/step-functions/) and abstract data transformation from your main state machine logic.
+```Use``` [Jinja2](http://jinja.pocoo.org/docs/2.10/) ```templates to perform complex input/output stage data transformation on``` [AWS Step Functions State Machines](https://aws.amazon.com/step-functions/) and abstract away data transformation from your main state machine's logic.
 
 Main Use Cases/Advantages:
-* When a new state machine is built to on top of a group of existing Lambda functions with pre-defined inputs and outputs
-* To encourage the development of low-coupled reusable Lambda functions build as part of a new state machine
+* To encourage the development of low-coupled reusable Lambda functions with clear input/outputs built as part of a Step Functions state machine
+* When a new state machine is built on top of a group of existing Lambda functions to transform the Lambda inputs/outputs without having to change any existing Lambda code
 
 Anyone who's built a reasonably-sized AWS Step Function state machine knows that a reasonable amount of time is spent managing stage inputs and outputs, ie, transforming the JSON output structure of one stage to fit the JSON input structure of another stage. While AWS provides a way to query the JSON input and do some basic tranformation via JsonPath there are scenarios where one needs a more expresive language to perform complext transformations. 
 
