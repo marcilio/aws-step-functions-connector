@@ -30,6 +30,8 @@ The main use cases for using the Connector Lambda above are:
 
 # Example
 
+In the state machine below states ```Legacy System Transform Output``` and ```New System Transform Output``` are Lambda Connectors added to the state machine to transform the outputs of states ```Fetch From Legacy System``` and ```Fetch From New System``` to match the inputs expected by single state ```Generate Employee Report```. A Jinja2 template uploaded to an S3 bucket is used by each transformation state.
+
 ![approach-overview](/doc/aws-step-functions-connector-example.png)
 
 # Deploying the Solution on AWS
