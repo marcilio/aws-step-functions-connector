@@ -14,7 +14,7 @@ The figure below illustrates the problem being addressed. On the left-side (A) y
 
  On the right-hand side (B) you can see how the Connector Lambdas (blue ellipses ```Transform 1-2``` and ```Transform 1-3```) can be used to transform ```state-1```'s output to match the expected inputs of ```state-2``` and ```state-3```. The two connector/transform states are backed up by the same Lambda function. Notice that each Connector state uses their own Jinja2 template specified by you. That is, your tranformation code is not scattered through your Lambdas anymore but instead placed into templates that can be easily understood and managed.
 
-![approach-overview](https://github.com/marcilio/aws-step-functions-connector/blob/master/doc/aws-step-functions-connector-overview.png)
+![approach-overview](doc/aws-step-functions-connector-overview.png)
 
 The main use cases for using the Connector Lambda above are:
 
@@ -32,7 +32,7 @@ The main use cases for using the Connector Lambda above are:
 
 In the state machine below states ```Legacy System Transform Output``` and ```New System Transform Output``` are Lambda Connectors added to the state machine to transform the outputs of states ```Fetch From Legacy System``` and ```Fetch From New System``` to match the inputs expected by single state ```Generate Employee Report```. A Jinja2 template uploaded to an S3 bucket is used by each transformation state.
 
-![approach-overview](https://github.com/marcilio/aws-step-functions-connector/blob/master/doc/aws-step-functions-connector-example.png)
+![approach-example](doc/aws-step-functions-connector-example.png)
 
 # Deploying the Solution on AWS
 
