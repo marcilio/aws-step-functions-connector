@@ -34,6 +34,8 @@ The main use cases for using the Connector Lambda above are:
 
 # Deploying the Solution on AWS
 
+* Install [pipenv](https://pipenv.readthedocs.io/en/latest/) to manage Python dependencies
+
 * Download and install the [AWS CLI](https://aws.amazon.com/cli/) and make sure you set up your AWS credentials.
 
 * Edit file ```scripts/my-env.sh``` and update the S3 bucket values to use S3 buckets into your AWS account.
@@ -41,6 +43,12 @@ The main use cases for using the Connector Lambda above are:
 ```bash
 export templates_s3_bucket="[s3-bucket-that-will-contain-the-jinja2-templates]"
 export lambda_package_s3_bucket="[s3-bucket-that-will-store-deployment-artifacts]"
+```
+
+* Install Python dependencies
+
+```bash
+pipenv sync
 ```
 
 * Copy the sample Jinja2 templates to the S3 bucket:
