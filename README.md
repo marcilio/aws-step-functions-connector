@@ -1,20 +1,36 @@
 # Intro
 
-```Use``` [Jinja2](http://jinja.pocoo.org/docs/2.10/) ```templates to perform complex input/output stage data transformation on``` [AWS Step Functions State Machines](https://aws.amazon.com/step-functions/) and abstract away data transformation from your main state machine's logic.
+Happily using [AWS Step Functions State Machines](https://aws.amazon.com/step-functions/) but spending too much time matching input and output parameters and writing transformation code? Your pain is over :)
 
-Main Use Cases/Advantages:
-* To encourage the development of low-coupled reusable Lambda functions with clear input/outputs built as part of a Step Functions state machine
-* When a new state machine is built on top of a group of existing Lambda functions to transform the Lambda inputs/outputs without having to change any existing Lambda code
+Template Languages to the rescue!
 
-Anyone who's built a reasonably-sized AWS Step Function state machine knows that a reasonable amount of time is spent managing stage inputs and outputs, ie, transforming the JSON output structure of one stage to fit the JSON input structure of another stage. While AWS provides a way to query the JSON input and do some basic tranformation via JsonPath there are scenarios where one needs a more expresive language to perform complext transformations. 
+## About this Project
 
-[Jinja2](http://jinja.pocoo.org/docs/2.10/) to the rescue!
+This project provides a reusable Lambda function (Connector Lambda) that can be added multiple times to a Step Functions state machine to perform input/output transformations. The Connector Lambda takes any input parameters and uses [Jinja2](http://jinja.pocoo.org/docs/2.10/) template to transform the input into a JSON output. As a results, you can focus on writing reusable Lambda functions for your state machine (or reusing existing Lambdas) without having to write transformation code as part of the Lambda's logic. Instead, transformation code will now be written using a template language!
 
-This project uses Jinja2 and a Lambda function (connector) to abstract out input/output transformations from the state machine main logic so that stage outputs match the expected input of following stages.  Just add the connector Lambda function to the state machine and specify the Jinja2 template to be used. The input values received by the Lambda are automatically exposed to the Jinja2 template. Use multiple connectors if needed!
+## Main Use Cases
+
+The figure below illustrates the problem being addressed. On the left-side (A) you see a state machine with three states called ```state-1```, ```state-2```, and ```state-3```. These states could be represented by Lambda functions (state machine tasks) or EC2 workers (state machine activities). You're trying to add these Lambdas to a new state machine but their inputs/outputs don't match up. For example, ```state-1``` produces a red cicle while ```state-2``` expects a green square and ```state-3``` expects a red triangle as inputs. 
+
+ On the right-hand side (B) you can see how the Connector Lambdas can be used to transform ```state-1```'s output to match the expected inputs of ```state-2``` and ```state-3```. Two Connector states are shown, both of which are backed up by the same Lambda function. Notice that the Connector states use different tranformation Jinja2 templates specified by you. That is, your tranformation code is not scattered through your Lambdas but instead placed into templates that can be easily understood and managed.
+
+![approach-overview](/doc/aws-step-functions-connector-overview.png)
+
+The main use cases for using the Connector Lambda above are:
+
+* You have already built several Lambda functions that take some input parameters and produce some output values and want to put them together as part of a new state machine you're building BUT you don't want to have to modify any Lambda code to match the expected inputs and outputs in the state machine. That is, you want to ```reuse your existing Lambda functions as-is```
+
+* You are building a new state machine and thus several Lambda functions. You're spending a lot of time making sure the Lambda output of a particular state matches the expected input of another state but you feel something is not right. And you're write! You're building highly-coupled Lambdas driven that only work in the context of the state machine you're building. Don't let the state machine dictate your Lambda inputs and outputs! That is, you want to ```build context-free low-coupled Lambdas with inputs and outputs that make sense regardless of the context```.
+
+## Advantages of using a Template Language for Input/Output Transformation
+
+* (Re)Use any of your existing Lambdas to build new state machines; handle transformations via templates
+* Don't worry about creating Lambda functions that fit a particular state machine (highly-coupled Lambdas); create reusable context-free Lambda functions with inputs and outputs that make sense
+* Don't spend hours writing and debugging input/output transformation code, instead, write simple templates and rely on the Connector Lambda to do handle the transformation logic
 
 # Example
 
-![approach-overview](/doc/aws-step-functions-connector.png)
+![approach-overview](/doc/aws-step-functions-connector-example.png)
 
 # Deploying the Solution on AWS
 
