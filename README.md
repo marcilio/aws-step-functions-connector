@@ -20,7 +20,7 @@ The main use cases for using the Connector Lambda above are:
 
 * You have already built several Lambda functions that take some input parameters and produce some output values and want to put them together as part of a new state machine you're building BUT you don't want to have to modify any Lambda code to match the expected inputs and outputs in the state machine. That is, you want to ```reuse your existing Lambda functions as-is```
 
-* You are building a new state machine and thus several Lambda functions. You're spending a lot of time making sure the Lambda output of a particular state matches the expected input of another state but you feel something is not right. And you're write! You're building highly-coupled Lambdas driven that only work in the context of the state machine you're building. Don't let the state machine dictate your Lambda inputs and outputs! That is, you want to ```build context-free low-coupled Lambdas with inputs and outputs that make sense regardless of the context```.
+* You are building a new state machine and thus several Lambda functions. You're spending a lot of time making sure the Lambda output of a particular state matches the expected input of another state but you feel something is not right. And you're right! You're building highly-coupled Lambdas that only work well in the context of the state machine you're building. Don't let the state machine dictate your Lambda inputs and outputs! You want to ```build context-free lowly-coupled Lambdas with inputs and outputs that make sense regardless of the context```.
 
 ## Advantages of using a Template Language for Input/Output Transformation
 
